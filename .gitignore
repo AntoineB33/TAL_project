@@ -1,2 +1,4 @@
 data/TRAIN_DEV_TEST/fr.tok
 data/TRAIN_DEV_TEST/en.tok
+data/toy-ende/run/model_step_500.pt
+data/toy-ende/run/model_step_1000.pt
