@@ -17,11 +17,6 @@ data:
         path_src: toy-ende/src-val.txt
         path_tgt: toy-ende/tgt-val.txt
 
-
-# Vocabulary files that were just created
-src_vocab: toy-ende/run/example.vocab.src
-tgt_vocab: toy-ende/run/example.vocab.tgt
-
 # Train on a single GPU
 world_size: 1
 gpu_ranks: [0]
