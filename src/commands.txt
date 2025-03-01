@@ -72,46 +72,13 @@ c.
 "$MOSES_HOME/mosesdecoder/scripts/training/clean-corpus-n.perl" Europarl_test_500.tok.true fr en ../Europarl_test_500.tok.true.clean 1 80
 
 
-
-
-
-Emea : 
-
-head -n 10000 Emea_en.tok > Emea_train_10k.tok.en
-head -n 10000 Emea_fr.tok > Emea_train_10k.tok.fr
-tail -n +10001 Emea_en.tok | head -n 1000 > Emea_dev_1k.tok.en
-tail -n +10001 Emea_fr.tok | head -n 1000 > Emea_dev_1k.tok.fr
-tail -n +11001 Emea_en.tok | head -n 500 > Emea_test_500.tok.en
-tail -n +11001 Emea_fr.tok | head -n 500 > Emea_test_500.tok.fr
-
-"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model.en --corpus Emea_train_10k.tok.en
-"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model.fr --corpus Emea_train_10k.tok.fr
-"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model.en --corpus Emea_dev_1k.tok.en
-"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model.fr --corpus Emea_dev_1k.tok.fr
-"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model.en --corpus Emea_test_500.tok.en
-"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model.fr --corpus Emea_test_500.tok.fr
-
-"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model.fr < Emea_train_10k.tok.en > Emea_train_10k.tok.true.en
-"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model.fr < Emea_train_10k.tok.fr > Emea_train_10k.tok.true.fr
-"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model.fr < Emea_dev_1k.tok.en > Emea_dev_1k.tok.true.en
-"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model.fr < Emea_dev_1k.tok.fr > Emea_dev_1k.tok.true.fr
-"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model.fr < Emea_test_500.tok.en > Emea_test_500.tok.true.en
-"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model.fr < Emea_test_500.tok.fr > Emea_test_500.tok.true.fr
-
-"$MOSES_HOME/mosesdecoder/scripts/training/clean-corpus-n.perl" Emea_train_10k.tok.true fr en ../Emea_train_10k.tok.true.clean 1 80
-"$MOSES_HOME/mosesdecoder/scripts/training/clean-corpus-n.perl" Emea_dev_1k.tok.true fr en ../Emea_dev_1k.tok.true.clean 1 80
-"$MOSES_HOME/mosesdecoder/scripts/training/clean-corpus-n.perl" Emea_test_500.tok.true fr en ../Emea_test_500.tok.true.clean 1 80
-
-
-
-
 conda activate env_opennmt
 
 cd ../../src
 
-onmt_build_vocab -config config.yaml -n_sample 10000
+onmt_build_vocab -config TRAIN_DEV_TEST_joints.yaml -n_sample 10000
 
-onmt_train -config config.yaml
+onmt_train -config TRAIN_DEV_TEST_joints.yaml
 
 onmt_translate -model ../data/run/model_step_5000.pt -src ../data/Europarl_test_500.tok.true.clean.en -output ../data/pred_5000.txt -gpu 0 -verbose
 
@@ -121,9 +88,34 @@ onmt_translate -model ../data/run/model_step_5000.pt -src ../data/Europarl_test_
 
 
 
+export MOSES_HOME="../../Training/SMT"
+cd ../data/II_Evaluation_forme_flechie/data_preparation/Europarl.en-fr.txt
 
+a.
+head -n 10000 Europarl.en-fr.en > Europarl_train_100k.en
+head -n 10000 Europarl.en-fr.fr > Europarl_train_100k.fr
+tail -n +10001 Europarl.en-fr.en | head -n 3750 > Europarl_dev_3750.en
+tail -n +10001 Europarl.en-fr.fr | head -n 3750 > Europarl_dev_3750.fr
 
+b.
+"$MOSES_HOME/mosesdecoder/scripts/tokenizer/tokenizer.perl" -l en < Europarl_train_100k.en > Europarl_train_100k.tok.en
+"$MOSES_HOME/mosesdecoder/scripts/tokenizer/tokenizer.perl" -l fr < Europarl_train_100k.fr > Europarl_train_100k.tok.fr
+"$MOSES_HOME/mosesdecoder/scripts/tokenizer/tokenizer.perl" -l en < Europarl_dev_3750.en > Europarl_dev_3750.tok.en
+"$MOSES_HOME/mosesdecoder/scripts/tokenizer/tokenizer.perl" -l fr < Europarl_dev_3750.fr > Europarl_dev_3750.tok.fr
 
+c.
+1.
+"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model_train.en --corpus Europarl_train_100k.tok.en
+"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model_train.fr --corpus Europarl_train_100k.tok.fr
+"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model_dev.en --corpus Europarl_dev_3450.tok.en
+"$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl" --model truecase-model_dev.fr --corpus Europarl_dev_3450.tok.fr
 
-steps : 5000
-1h
+2.
+"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model_train.en < Europarl_train_100k.tok.en > Europarl_train_100k.tok.true.en
+"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model_train.fr < Europarl_train_100k.tok.fr > Europarl_train_100k.tok.true.fr
+"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model_dev.fr < Europarl_dev_3450.tok.en > Europarl_dev_3450.tok.true.en
+"$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl" --model truecase-model_dev.fr < Europarl_dev_3450.tok.fr > Europarl_dev_3450.tok.true.fr
+
+d.
+"$MOSES_HOME/mosesdecoder/scripts/training/clean-corpus-n.perl" Europarl_train_100k.tok.true fr en ../Europarl_train_100k.tok.true.clean 1 80
+"$MOSES_HOME/mosesdecoder/scripts/training/clean-corpus-n.perl" Europarl_dev_3450.tok.true fr en ../Europarl_dev_3450.tok.true.clean 1 80
