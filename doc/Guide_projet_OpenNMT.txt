@@ -1,0 +1,100 @@
+****************************************************************************************
+*                                                                                      *
+*		    Guide de préparation de corpus pour l'apprentissage                        *
+*                                                                                      *
+* Nasredine SEMMAR                                                                     *
+* CEA LIST - LASTI                                                                     *
+* Gif sur Yvette - France                                                              *
+* nasredine.semmar@cea.fr                                                              *
+*                                                                                      *
+****************************************************************************************
+
+1) Récupérartion des scripts de préparation de corpus
+
+Répertoire de travail: /home/semmar/Training/SMT
+
+git clone https://github.com/moses-smt/mosesdecoder.git
+
+Les scripts de préparation de corpus se trouvent sur le répertoire /home/semmar/Training/SMT/mosesdecoder/scripts
+
+
+2) Préparation du corpus
+------------------------
+
+a. Récupération du corpus EuroParl
+
+Copier sur le répertoire /home/semmar/Training/SMT/Experiments/Translation les fichiers suivants:
+
+Europarl_dev_1k.en
+Europarl_dev_1k.fr
+Europarl_test_500.en
+Europarl_test_500.fr
+Europarl_train_10k.en
+Europarl_train_10k.fr
+
+b. Tokenisation du corpus Anglais-Français (TRAIN du corpus Europarl) 
+
+source moses.env
+
+Sous le répertoire /home/semmar/Training/SMT/Experiments/Translation
+
+- Anglais (TRAIN du corpus Europarl)
+
+$MOSES_HOME/mosesdecoder/scripts/tokenizer/tokenizer.perl -l en < Europarl_train_10k.en > Europarl_train_10k.tok.en
+
+- Français (TRAIN du corpus Europarl)
+
+$MOSES_HOME/mosesdecoder/scripts/tokenizer/tokenizer.perl -l fr < Europarl_train_10k.fr > Europarl_train_10k.tok.fr
+
+Résultat:
+Europarl_train_10k.tok.en
+Europarl_train_10k.tok.en
+
+c. Changement des majuscules en minuscules du corpus Anglais-Français
+
+1. Apprentissage du modèle de transformation
+
+- Anglais (TRAIN du corpus Europarl)
+
+$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl --model truecase-model.en --corpus Europarl_train_10k.tok.en
+
+- Français (TRAIN du corpus Europarl)
+
+$MOSES_HOME/mosesdecoder/scripts/recaser/train-truecaser.perl --model truecase-model.fr --corpus Europarl_train_10k.tok.fr
+
+Résultat:
+truecase-model.en
+truecase-model.fr
+
+2. Transformation des majuscules en minuscules
+
+- Anglais (TRAIN du corpus Europarl)
+
+$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl --model truecase-model.en < Europarl_train_10k.tok.en > Europarl_train_10k.tok.true.en
+
+- Français (TRAIN du corpus Europarl)
+
+$MOSES_HOME/mosesdecoder/scripts/recaser/truecase.perl --model truecase-model.fr < Europarl_train_10k.tok.fr > Europarl_train_10k.tok.true.fr
+
+Résultat:
+Europarl_train_10k.tok.true.en
+Europarl_train_10k.tok.true.fr
+
+
+d. Nettoyage en limitant la longueur des phrases à 80 caractères (TRAIN du corpus Europarl)
+
+$MOSES_HOME/mosesdecoder/scripts/training/clean-corpus-n.perl Europarl_train_10k.tok.true fr en Europarl_train_10k.tok.true.clean 1 80
+
+Résultat:
+Europarl_train_10k.tok.true.clean.en (wc -l Europarl_train_10k.tok.true.clean.en => 9767 Europarl_train_10k.tok.true.clean.en)
+Europarl_train_10k.tok.true.clean.fr (wc -l Europarl_train_10k.tok.true.clean.fr => 9767 Europarl_train_10k.tok.true.clean.fr)
+
+Remarque:
+On ne garde que les phrases ayant au plus 80 caractères
+
+Note importante:
+----------------
+
+- Il faut faire cette opération (tokenisation, transformation des majuscules en minuscules ...) sur les deux corpus Europarl et Emea et pour TRAIN, DEV et TEST.
+
+- Toutes les étapes d'apprentissage et de traduction d'OpenNMT doivent être réalisées sur les corpus nettoyés (résultats de l'étape d: Nettoyage en limitant la longueur des phrases à 80 caractères)

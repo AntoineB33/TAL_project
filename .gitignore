@@ -1,4 +1,3 @@
-data/posterior_analysis/TRAIN_DEV_TEST/en.tok
-data/posterior_analysis/TRAIN_DEV_TEST/fr.tok
-data/posterior_analysis/toy-ende/run/model_step_500.pt
-data/posterior_analysis/toy-ende/run/model_step_1000.pt
+**/model*
+data/TRAIN_DEV_TEST
+**/*_train_10k*
