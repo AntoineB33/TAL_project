@@ -4,30 +4,40 @@ from pathlib import Path
 import sys
 from sklearn.model_selection import train_test_split
 
-WSL_PATH = "/mnt/c/Users/abarb/Documents/travail/Polytech Paris Saclay/cours/et5/TAL/projet/git/TAL_project"
-
 # Set Moses home directory (relative to the project location)
-MOSES_HOME = "../../../../../../Training/SMT"
+MOUSE_HOME = "/home/semmar/Training/SMT"
+MOSES_HOME = "../../../../../../Training/SMT" # TO_EDIT_BEFORE_DELIVERY
 
 
-class WSLSession:
-    def __init__(self):
-        # Start a persistent WSL bash session
-        self.process = subprocess.Popen(["wsl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
-        # Change to the project directory
-        self.run_command(f"cd {WSL_PATH}")
-        self.run_command("conda activate env_opennmt")
-
-    def run_command(self, command):
-        print(f"Running: {command}")
-        self.process.stdin.write(command + "\n")
-        self.process.stdin.flush()
-
-    def close(self):
-        # Exit the bash session
-        self.process.stdin.write("exit\n")
-        self.process.stdin.flush()
-        self.process.wait()
+def run_wsl_command(command):
+    """
+    Execute a command in WSL and return the output.
+    
+    Args:
+        command (str): The command to execute in WSL
+        
+    Returns:
+        tuple: (stdout, stderr, return_code)
+    """
+    try:
+        # Execute the command
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+            text=True
+        )
+        
+        # Get the output
+        stdout, stderr = process.communicate()
+        return_code = process.returncode
+        
+        print(stdout)
+        return stdout, stderr, return_code
+    
+    except Exception as e:
+        return "", str(e), 1
 
 def getLines(lines, input_path):
     if not lines[input_path]:
@@ -79,7 +89,6 @@ if __name__ == "__main__":
              "EMEA.en-fr.fr": [],
              "../../TEST_data/Europarl_out_domain.tok.true.clean.en": [],
              "../../TEST_data/Europarl_out_domain.tok.true.clean.fr": []}
-
 
     # Change to data directory
     os.chdir(Path("data/II_Evaluation_forme_flechie/data_preparation/Europarl.en-fr.txt"))
@@ -143,6 +152,7 @@ if __name__ == "__main__":
                     "../../DEV_data/Europarl_dev_3750.tok.true.clean", 1, 80)
     
     # for the test, getting random pairs of lines inside the domain using train_test_split
+    print("preparing test data for inside the domain")
     getLines(lines, "Europarl.en-fr.en")
     getLines(lines, "Europarl.en-fr.fr")
     _, _, test_en_lines, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][:103_750], lines["Europarl.en-fr.fr"][:103_750], test_size=500)
@@ -152,6 +162,7 @@ if __name__ == "__main__":
         f.writelines(test_fr_lines)
 
     # for the test, getting random pairs of lines outside the domain using train_test_split
+    print("preparing test data for outside the domain")
     _, _, test_en_lines, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][103_750:], lines["Europarl.en-fr.fr"][103_750:], test_size=500)
     with open("../../TEST_data/Europarl_test_out_500.tok.true.clean.en", 'w', encoding='utf-8') as f:
         f.writelines(test_en_lines)
@@ -201,24 +212,19 @@ if __name__ == "__main__":
 
     print("Data preparation complete.")
 
-    session = WSLSession()
-
     # Run 1
-    session.run_command("onmt_build_vocab -config run_1.yaml -n_sample 10000")
-    session.run_command("onmt_train -config run_1.yaml")
+    stdout, stderr, return_code = run_wsl_command("onmt_build_vocab -config run_1.yaml -n_sample 10000")
+    stdout, stderr, return_code = run_wsl_command("onmt_train -config run_1.yaml")
     steps = 10000
-    session.run_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_{steps}.txt -gpu 0 -verbose")
-    session.run_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1/pred_in_{steps}.txt")
-    session.run_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_1/pred_out_{steps}.txt -gpu 0 -verbose")
-    session.run_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_1/pred_out_{steps}.txt")
+    stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_{steps}.txt -gpu 0 -verbose")
+    stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1/pred_in_{steps}.txt")
+    stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_1/pred_out_{steps}.txt -gpu 0 -verbose")
+    stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_1/pred_out_{steps}.txt")
 
     # Run 2
-    session.run_command("onmt_build_vocab -config run_2.yaml -n_sample 10000")
-    session.run_command("onmt_train -config run_2.yaml")
-    session.run_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_2/pred_in_{steps}.txt -gpu 0 -verbose")
-    session.run_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_2/pred_in_{steps}.txt")
-    session.run_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_2/pred_out_{steps}.txt -gpu 0 -verbose")
-    session.run_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_2/pred_out_{steps}.txt")
-
-    # Close the session when done
-    session.close()
+    stdout, stderr, return_code = run_wsl_command("onmt_build_vocab -config run_2.yaml -n_sample 10000")
+    stdout, stderr, return_code = run_wsl_command("onmt_train -config run_2.yaml")
+    stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_2/pred_in_{steps}.txt -gpu 0 -verbose")
+    stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_2/pred_in_{steps}.txt")
+    stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_2/pred_out_{steps}.txt -gpu 0 -verbose")
+    stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_2/pred_out_{steps}.txt")
