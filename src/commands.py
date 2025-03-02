@@ -16,6 +16,7 @@ class WSLSession:
         self.process = subprocess.Popen(["wsl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
         # Change to the project directory
         self.run_command(f"cd {WSL_PATH}")
+        self.run_command("conda activate env_opennmt")
 
     def run_command(self, command):
         print(f"Running: {command}")
@@ -145,16 +146,16 @@ if __name__ == "__main__":
     getLines(lines, "Europarl.en-fr.en")
     getLines(lines, "Europarl.en-fr.fr")
     _, _, test_en_lines, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][:103_750], lines["Europarl.en-fr.fr"][:103_750], test_size=500)
-    with open("../../TEST_data/Europarl_in_domain.tok.true.clean.en", 'w', encoding='utf-8') as f:
+    with open("../../TEST_data/Europarl_test_in_500.tok.true.clean.en", 'w', encoding='utf-8') as f:
         f.writelines(test_en_lines)
-    with open("../../TEST_data/Europarl_in_domain.tok.true.clean.fr", 'w', encoding='utf-8') as f:
+    with open("../../TEST_data/Europarl_test_in_500.tok.true.clean.fr", 'w', encoding='utf-8') as f:
         f.writelines(test_fr_lines)
 
     # for the test, getting random pairs of lines outside the domain using train_test_split
     _, _, test_en_lines, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][103_750:], lines["Europarl.en-fr.fr"][103_750:], test_size=500)
-    with open("../../TEST_data/Europarl_out_domain.tok.true.clean.en", 'w', encoding='utf-8') as f:
+    with open("../../TEST_data/Europarl_test_out_500.tok.true.clean.en", 'w', encoding='utf-8') as f:
         f.writelines(test_en_lines)
-    with open("../../TEST_data/Europarl_out_domain.tok.true.clean.fr", 'w', encoding='utf-8') as f:
+    with open("../../TEST_data/Europarl_test_out_500.tok.true.clean.fr", 'w', encoding='utf-8') as f:
         f.writelines(test_fr_lines)
 
     # Change to data directory
@@ -201,13 +202,23 @@ if __name__ == "__main__":
     print("Data preparation complete.")
 
     session = WSLSession()
-    # Run initial commands
-    session.run_command("conda activate env_opennmt")
+
+    # Run 1
     session.run_command("onmt_build_vocab -config run_1.yaml -n_sample 10000")
     session.run_command("onmt_train -config run_1.yaml")
     steps = 10000
-    session.run_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_in_domain.tok.true.clean.fr -output run_1/pred_{steps}.txt -gpu 0 -verbose")
-    session.run_command("./multi_bleu.pl ../data/Europarl_test_500.tok.true.clean.fr < ../data/pred_5000.txt")
+    session.run_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_{steps}.txt -gpu 0 -verbose")
+    session.run_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1/pred_in_{steps}.txt")
+    session.run_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_1/pred_out_{steps}.txt -gpu 0 -verbose")
+    session.run_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_1/pred_out_{steps}.txt")
+
+    # Run 2
+    session.run_command("onmt_build_vocab -config run_2.yaml -n_sample 10000")
+    session.run_command("onmt_train -config run_2.yaml")
+    session.run_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_2/pred_in_{steps}.txt -gpu 0 -verbose")
+    session.run_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_2/pred_in_{steps}.txt")
+    session.run_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_2/pred_out_{steps}.txt -gpu 0 -verbose")
+    session.run_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_2/pred_out_{steps}.txt")
 
     # Close the session when done
     session.close()
