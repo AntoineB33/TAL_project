@@ -11,44 +11,10 @@ MOSES_HOME = "../../../../../../Training/SMT"
 data_dir = Path("data/II_Evaluation_forme_flechie/data_preparation/Europarl.en-fr.txt")
 os.chdir(data_dir)
 
-# Utility function to split files
-def split_files(input_path, train_lines, dev_lines, train_output, dev_output):
-    with open(input_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-    
-    # Write training split
-    with open(train_output, 'w', encoding='utf-8') as f:
-        f.writelines(lines[:train_lines])
-    
-    # Write dev split
-    with open(dev_output, 'w', encoding='utf-8') as f:
-        f.writelines(lines[train_lines:train_lines+dev_lines])
-
-def write_pairs(pairs, en_path, fr_path):
-    """Write paired sentences to respective files."""
-    en = [p[0] for p in pairs]
-    fr = [p[1] for p in pairs]
-    with open(en_path, 'w', encoding='utf-8') as f_en, open(fr_path, 'w', encoding='utf-8') as f_fr:
-        f_en.writelines(en)
-        f_fr.writelines(fr)
-
-def split_paired_data(en_path, fr_path, splits, output_files, random_state=42):
-    """Split and shuffle paired data using train_test_split."""
-    with open(en_path, 'r', encoding='utf-8') as f_en, open(fr_path, 'r', encoding='utf-8') as f_fr:
-        en = f_en.readlines()
-        fr = f_fr.readlines()
-    
-    assert len(en) == len(fr), "Mismatched lines in input files"
-    paired = list(zip(en, fr))
-    
-    # Split into train, dev, test_in
-    train, remaining = train_test_split(paired, train_size=splits[0], random_state=random_state)
-    dev, test_in = train_test_split(remaining, train_size=splits[1], test_size=splits[2], random_state=random_state)
-    
-    # Write splits to files
-    write_pairs(train, output_files[0][0], output_files[0][1])
-    write_pairs(dev, output_files[1][0], output_files[1][1])
-    write_pairs(test_in, output_files[2][0], output_files[2][1])
+def getLines(lines, input_path):
+    if not lines[input_path]:
+        with open(input_path, 'r', encoding='utf-8') as f:
+            lines[input_path] = f.readlines()
 
 # Utility function for tokenization
 def tokenize(input_file, output_file, lang):
@@ -82,57 +48,82 @@ def clean_corpus(base_name, lang1, lang2, output_base, min_len, max_len):
 
 
 if __name__ == "__main__":
+    
+
     args = sys.argv[1:]
-    # args = ["--in"]
-    test_in = "--in" in args
-    test_out = "--out" in args
-    if not test_in and not test_out:
-        test_out = True
-        test_in = True
+    lines = {"Europarl.en-fr.en": [],
+             "Europarl.en-fr.fr": [],
+             "EMEA.en-fr.en": [],
+             "EMEA.en-fr.fr": [],
+             "../../TEST_data/Europarl_out_domain.tok.true.clean.en": [],
+             "../../TEST_data/Europarl_out_domain.tok.true.clean.fr": []}
 
     # check if the data has already been processed
-    if not Path("../../TRAIN_data/Europarl_train_100k.tok.true.clean.en").exists() or not Path("../../TRAIN_data/Europarl_train_100k.tok.true.clean.fr").exists():
-
-        # a. Split files
-        print("Splitting files...")
-        split_files("Europarl.en-fr.en", 10000, 3750, "Europarl_train_100k.en", "Europarl_dev_3750.en")
-        split_files("Europarl.en-fr.fr", 10000, 3750, "Europarl_train_100k.fr", "Europarl_dev_3750.fr")
+    if not Path("../../TRAIN_data/Europarl_train_100k.tok.true.clean.en").exists():
+        # a. Splitting data
+        print("Splitting data...")
+        getLines(lines, "Europarl.en-fr.en")
+        with open("Europarl_train_100k.en", 'w', encoding='utf-8') as f:
+            f.writelines(lines["Europarl.en-fr.en"][:100_000])
 
         # b. Tokenization
         print("Tokenizing...")
         tokenize("Europarl_train_100k.en", "Europarl_train_100k.tok.en", "en")
         tokenize("Europarl_train_100k.fr", "Europarl_train_100k.tok.fr", "fr")
-        tokenize("Europarl_dev_3750.en", "Europarl_dev_3750.tok.en", "en")
-        tokenize("Europarl_dev_3750.fr", "Europarl_dev_3750.tok.fr", "fr")
 
         # c. Truecasing
         print("Truecasing...")
         # c.1 Training truecase models
-        # Note: The original commands contain a typo here (3450 vs 3750)
         train_truecaser("Europarl_train_100k.tok.en", "truecase-model_train.en")
         train_truecaser("Europarl_train_100k.tok.fr", "truecase-model_train.fr")
-        train_truecaser("Europarl_dev_3750.tok.en", "truecase-model_dev.en")  # Fixed filename
-        train_truecaser("Europarl_dev_3750.tok.fr", "truecase-model_dev.fr")  # Fixed filename
 
         # c.2 Applying truecasing
         apply_truecaser("truecase-model_train.en", "Europarl_train_100k.tok.en", 
                         "Europarl_train_100k.tok.true.en")
         apply_truecaser("truecase-model_train.fr", "Europarl_train_100k.tok.fr", 
                         "Europarl_train_100k.tok.true.fr")
-        apply_truecaser("truecase-model_dev.en", "Europarl_dev_3750.tok.en", 
-                        "Europarl_dev_3750.tok.true.en")  # Fixed filename
-        apply_truecaser("truecase-model_dev.fr", "Europarl_dev_3750.tok.fr", 
-                        "Europarl_dev_3750.tok.true.fr")  # Fixed filename
-
+        
+        # d. Cleaning corpus
         print("Cleaning corpus...")
         clean_corpus("Europarl_train_100k.tok.true", "fr", "en", 
                     "../../TRAIN_data/Europarl_train_100k.tok.true.clean", 1, 80)
+
+    if not Path("../../DEV_data/Europarl_dev_3750.tok.true.clean.en").exists():
+        # a. Splitting data
+        print("Splitting data...")
+        getLines(lines, "Europarl.en-fr.fr")
+        with open("Europarl_dev_3750.fr", 'w', encoding='utf-8') as f:
+            f.writelines(lines["Europarl.en-fr.fr"][100_000:103_750])
+
+        # b. Tokenization
+        print("Tokenizing...")
+        tokenize("Europarl_dev_3750.en", "Europarl_dev_3750.tok.en", "en")
+        tokenize("Europarl_dev_3750.fr", "Europarl_dev_3750.tok.fr", "fr")
+
+        # c. Truecasing
+        print("Truecasing...")
+        # c.1 Training truecase models
+        train_truecaser("Europarl_dev_3750.tok.en", "truecase-model_dev.en")
+        train_truecaser("Europarl_dev_3750.tok.fr", "truecase-model_dev.fr")
+
+        # c.2 Applying truecasing
+        apply_truecaser("truecase-model_dev.en", "Europarl_dev_3750.tok.en", 
+                        "Europarl_dev_3750.tok.true.en")
+        apply_truecaser("truecase-model_dev.fr", "Europarl_dev_3750.tok.fr", 
+                        "Europarl_dev_3750.tok.true.fr")
+
+        # d. Cleaning corpus
+        print("Cleaning corpus...")
         clean_corpus("Europarl_dev_3750.tok.true", "fr", "en", 
                     "../../DEV_data/Europarl_dev_3750.tok.true.clean", 1, 80)
+    
+    # for the test, getting random pairs of lines inside the domain using train_test_split
+    getLines(lines, "Europarl.en-fr.en")
+    getLines(lines, "Europarl.en-fr.fr")
+    X_train, X_test, y_train, y_test = train_test_split(lines["Europarl.en-fr.en"], lines["Europarl.en-fr.fr"], test_size=500)
 
-        print("Processing complete!")
+    
 
-    if "--not_rand_test" not in args or test_in and not (Path("../../TEST_data/Europarl_test_in_500.en").exists() and Path("../../TEST_data/Europarl_test_in_500.fr")) or test_out and not (Path("../../TEST_data/Europarl_test_out_500.en").exists() and Path("../../TEST_data/Europarl_test_out_500.fr")):
-        # Split test data
-        split_random("Europarl.en-fr.en", 13750, 500, "Europarl_test_in_500.en", "Europarl_test_out_500.en")
-        split_random("Europarl.en-fr.fr", 13750, 500, "Europarl_test_in_500.fr", "Europarl_test_out_500.fr")
+
+
+    print("Data preparation complete.")
