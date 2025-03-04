@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 # Set Moses home directory (relative to the project location)
 MOUSE_HOME = "/home/semmar/Training/SMT"
-MOSES_HOME = "../../../../../../Training/SMT" # TO_EDIT_BEFORE_DELIVERY
+MOSES_HOME = "../../../../../Training/SMT" # TO_EDIT_BEFORE_DELIVERY
 
 
 def run_wsl_command(command):
@@ -151,23 +151,24 @@ if __name__ == "__main__":
         clean_corpus("Europarl_dev_3750.tok.true", "fr", "en", 
                     "../../DEV_data/Europarl_dev_3750.tok.true.clean", 1, 80)
     
-    # for the test, getting random pairs of lines inside the domain using train_test_split
-    print("preparing test data for inside the domain")
-    getLines(lines, "Europarl.en-fr.en")
-    getLines(lines, "Europarl.en-fr.fr")
-    _, _, test_en_lines, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][:103_750], lines["Europarl.en-fr.fr"][:103_750], test_size=500)
-    with open("../../TEST_data/Europarl_test_in_500.tok.true.clean.en", 'w', encoding='utf-8') as f:
-        f.writelines(test_en_lines)
-    with open("../../TEST_data/Europarl_test_in_500.tok.true.clean.fr", 'w', encoding='utf-8') as f:
-        f.writelines(test_fr_lines)
+    if 0:
+        # for the test, getting random pairs of lines inside the domain using train_test_split
+        print("preparing test data for inside the domain")
+        getLines(lines, "Europarl.en-fr.en")
+        getLines(lines, "Europarl.en-fr.fr")
+        _, test_en_lines, _, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][:103_750], lines["Europarl.en-fr.fr"][:103_750], test_size=500)
+        with open("../../TEST_data/Europarl_test_in_500.tok.true.clean.en", 'w', encoding='utf-8') as f:
+            f.writelines(test_en_lines)
+        with open("../../TEST_data/Europarl_test_in_500.tok.true.clean.fr", 'w', encoding='utf-8') as f:
+            f.writelines(test_fr_lines)
 
-    # for the test, getting random pairs of lines outside the domain using train_test_split
-    print("preparing test data for outside the domain")
-    _, _, test_en_lines, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][103_750:], lines["Europarl.en-fr.fr"][103_750:], test_size=500)
-    with open("../../TEST_data/Europarl_test_out_500.tok.true.clean.en", 'w', encoding='utf-8') as f:
-        f.writelines(test_en_lines)
-    with open("../../TEST_data/Europarl_test_out_500.tok.true.clean.fr", 'w', encoding='utf-8') as f:
-        f.writelines(test_fr_lines)
+        # for the test, getting random pairs of lines outside the domain using train_test_split
+        print("preparing test data for outside the domain")
+        _, test_en_lines, _, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][103_750:], lines["Europarl.en-fr.fr"][103_750:], test_size=500)
+        with open("../../TEST_data/Europarl_test_out_500.tok.true.clean.en", 'w', encoding='utf-8') as f:
+            f.writelines(test_en_lines)
+        with open("../../TEST_data/Europarl_test_out_500.tok.true.clean.fr", 'w', encoding='utf-8') as f:
+            f.writelines(test_fr_lines)
 
     # Change to data directory
     os.chdir(Path("../EMEA.en-fr.txt"))
@@ -212,19 +213,21 @@ if __name__ == "__main__":
 
     print("Data preparation complete.")
 
-    # Run 1
-    stdout, stderr, return_code = run_wsl_command("onmt_build_vocab -config run_1.yaml -n_sample 10000")
-    stdout, stderr, return_code = run_wsl_command("onmt_train -config run_1.yaml")
-    steps = 10000
-    stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_{steps}.txt -gpu 0 -verbose")
-    stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1/pred_in_{steps}.txt")
-    stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_1/pred_out_{steps}.txt -gpu 0 -verbose")
-    stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_1/pred_out_{steps}.txt")
+    # # Run 1
+    # stdout, stderr, return_code = run_wsl_command("onmt_build_vocab -config run_1.yaml -n_sample 10000")
+    # stdout, stderr, return_code = run_wsl_command("onmt_train -config run_1.yaml")
+    # steps = 10000
+    #onmt_translate -model run_1/run/model_step_2500.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_2500.txt -gpu 0 -verbose
+    # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_{steps}.txt -gpu 0 -verbose")
+    #../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1/pred_in_2500.txt
+    # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1/pred_in_{steps}.txt")
+    # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_1/pred_out_{steps}.txt -gpu 0 -verbose")
+    # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_1/pred_out_{steps}.txt")
 
-    # Run 2
-    stdout, stderr, return_code = run_wsl_command("onmt_build_vocab -config run_2.yaml -n_sample 10000")
-    stdout, stderr, return_code = run_wsl_command("onmt_train -config run_2.yaml")
-    stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_2/pred_in_{steps}.txt -gpu 0 -verbose")
-    stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_2/pred_in_{steps}.txt")
-    stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_2/pred_out_{steps}.txt -gpu 0 -verbose")
-    stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_2/pred_out_{steps}.txt")
+    # # Run 2
+    # stdout, stderr, return_code = run_wsl_command("onmt_build_vocab -config run_2.yaml -n_sample 10000")
+    # stdout, stderr, return_code = run_wsl_command("onmt_train -config run_2.yaml")
+    # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_2/pred_in_{steps}.txt -gpu 0 -verbose")
+    # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_2/pred_in_{steps}.txt")
+    # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_2/pred_out_{steps}.txt -gpu 0 -verbose")
+    # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_2/pred_out_{steps}.txt")
