@@ -46,8 +46,8 @@ def clean_corpus(base_name, lang1, lang2, output_base, min_len, max_len):
            str(min_len), str(max_len)]
     subprocess.run(cmd, check=True)
 
-def prepare_data(lines: dict[str: list[str]], inputPath: str, outputName: str, outputPath, start = 0, end = -1, overwrite = False):
-    if overwrite or not (Path(outputPath + outputName + ".en").exists() and Path(outputPath + outputName + ".fr").exists()):
+def prepare_data(lines: dict[str: list[str]], inputPath: str, outputName: str, outputPath, start = 0, end = -1, overwrite = False, is_train_100k_10k = False):
+    if overwrite or not (Path(outputPath + outputName + ".en").exists() and Path(outputPath + outputName + ".fr").exists()) or is_train_100k_10k and not (Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.en").exists() and Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.fr").exists()):
         for lang in ["en", "fr"]:
             # a. Splitting data
             print("Splitting data...")
@@ -75,6 +75,19 @@ def prepare_data(lines: dict[str: list[str]], inputPath: str, outputName: str, o
         print("Cleaning corpus...")
         clean_corpus(outputName+".tok.true", "fr", "en", 
                     outputPath + outputName + ".tok.true.clean", 1, 80)
+        
+        if is_train_100k_10k:
+            for lang in ["en", "fr"]:
+                if is_train_100k_10k:
+                    # e. Combining corpora
+                    print("Combining corpora...")
+                    train_lines = []
+                    with open("../../TRAIN_data/Europarl_train_100k.tok.true.clean."+lang, 'r', encoding='utf-8') as f:
+                        train_lines += f.readlines()
+                    with open("../../TRAIN_data/EMEA_train_10k.tok.true.clean."+lang, 'r', encoding='utf-8') as f:
+                        train_lines += f.readlines()
+                    with open("../../TRAIN_data/Europarl_EMEA_train_100k_10k.tok.true.clean."+lang, 'w', encoding='utf-8') as f:
+                        f.writelines(train_lines)
 
 
 if __name__ == "__main__":
@@ -87,71 +100,36 @@ if __name__ == "__main__":
     # Change to data directory
     os.chdir(Path("data/II_Evaluation_forme_flechie/data_preparation"))
     
-    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr.txt", "Europarl_train_100k", "../../TRAIN_data/", end = 100_000)
+    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr", "Europarl_train_100k", "../../TRAIN_data/", end = 100_000)
 
-    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr.txt", "Europarl_dev_3750", "../../DEV_data/", start = 100_000, end = 103_750)
+    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr", "Europarl_dev_3750", "../../DEV_data/", start = 100_000, end = 103_750)
 
     if "no_new_test" not in args or not (Path("../../TEST_data/Europarl_test_in_500.tok.true.clean.en").exists() and Path("../../TEST_data/Europarl_test_in_500.tok.true.clean.en").exists()):
         # for the test, getting random pairs of lines inside the domain using train_test_split
         print("preparing test data for inside the domain")
         getLines(lines, "Europarl.en-fr.en")
         getLines(lines, "Europarl.en-fr.fr")
-        _, test_en_lines, _, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][:103_750], lines["Europarl.en-fr.fr"][:103_750], test_size=500)
-        with open("../../TEST_data/Europarl_test_in_500.tok.true.clean.en", 'w', encoding='utf-8') as f:
+        _, test_en_lines, _, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][103_750:], lines["Europarl.en-fr.fr"][103_750:], test_size=500)
+        with open("../../TEST_data/Europarl_test_in_500.en", 'w', encoding='utf-8') as f:
             f.writelines(test_en_lines)
-        getLines(lines, "EMEA.en-fr.en")
-        getLines(lines, "EMEA.en-fr.fr")
-        with open("../../TEST_data/Europarl_test_in_500.tok.true.clean.fr", 'w', encoding='utf-8') as f:
+        with open("../../TEST_data/Europarl_test_in_500.fr", 'w', encoding='utf-8') as f:
             f.writelines(test_fr_lines)
+        prepare_data(lines, "../../TEST_data/Europarl_test_in_500", "Europarl_test_in_500", "../../TEST_data/", overwrite = True)
 
         # for the test, getting random pairs of lines outside the domain using train_test_split
         print("preparing test data for outside the domain")
-        _, test_en_lines, _, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][103_750:], lines["Europarl.en-fr.fr"][103_750:], test_size=500)
-        with open("../../TEST_data/Europarl_test_out_500.tok.true.clean.en", 'w', encoding='utf-8') as f:
+        getLines(lines, "EMEA.en-fr.en")
+        getLines(lines, "EMEA.en-fr.fr")
+        _, test_en_lines, _, test_fr_lines = train_test_split(lines["Europarl.en-fr.en"][10_000:], lines["Europarl.en-fr.fr"][10_000:], test_size=500)
+        with open("../../TEST_data/Europarl_test_out_500.en", 'w', encoding='utf-8') as f:
             f.writelines(test_en_lines)
-        with open("../../TEST_data/Europarl_test_out_500.tok.true.clean.fr", 'w', encoding='utf-8') as f:
+        with open("../../TEST_data/Europarl_test_out_500.fr", 'w', encoding='utf-8') as f:
             f.writelines(test_fr_lines)
+        prepare_data(lines, "../../TEST_data/Europarl_test_out_500", "Europarl_test_out_500", "../../TEST_data/", overwrite = True)
 
     # Change to data directory
-    os.chdir(Path("../EMEA.en-fr.txt"))
-    getLines(lines, "EMEA.en-fr.en")
-    getLines(lines, "EMEA.en-fr.fr")
-    if not Path("../../TRAIN_data/Europarl_EMEA_train_100k_10k.tok.true.clean.en").exists():
-        # a. Splitting data
-        print("Splitting data...")
-        with open("EMEA_train_10k.en", 'w', encoding='utf-8') as f:
-            f.writelines(lines["EMEA.en-fr.en"][:10_000])
-        with open("EMEA_train_10k.fr", 'w', encoding='utf-8') as f:
-            f.writelines(lines["EMEA.en-fr.fr"][:10_000])
-        
-        # b. Tokenization
-        print("Tokenizing...")
-        tokenize("EMEA_train_10k.en", "EMEA_train_10k.tok.en", "en")
-        tokenize("EMEA_train_10k.fr", "EMEA_train_10k.tok.fr", "fr")
-
-        # c. Truecasing
-        print("Truecasing...")
-        # c.1 Training truecase models
-        train_truecaser("EMEA_train_10k.tok.en", "truecase-model_train.en")
-        train_truecaser("EMEA_train_10k.tok.fr", "truecase-model_train.fr")
-
-        # c.2 Applying truecasing
-        apply_truecaser("truecase-model_train.en", "EMEA_train_10k.tok.en", 
-                        "EMEA_train_10k.tok.true.en")
-        apply_truecaser("truecase-model_train.fr", "EMEA_train_10k.tok.fr",
-                        "EMEA_train_10k.tok.true.fr")
-        
-        # d. Cleaning corpus
-        print("Cleaning corpus...")
-        clean_corpus("EMEA_train_10k.tok.true", "fr", "en", 
-                    "../../TRAIN_data/EMEA_train_10k.tok.true.clean", 1, 80)
-        
-        # e. Combining corpora
-        print("Combining corpora...")
-        with open("../../TRAIN_data/Europarl_EMEA_train_100k_10k.tok.true.clean.en", 'w', encoding='utf-8') as f:
-            f.writelines(lines["Europarl.en-fr.en"][:100_000] + lines["EMEA.en-fr.en"][:10_000])
-        with open("../../TRAIN_data/Europarl_EMEA_train_100k_10k.tok.true.clean.fr", 'w', encoding='utf-8') as f:
-            f.writelines(lines["Europarl.en-fr.fr"][:100_000] + lines["EMEA.en-fr.fr"][:10_000])
+    prepare_data(lines, "EMEA.en-fr.txt/EMEA.en-fr", "EMEA_train_10k", "../../TRAIN_data/", end = 10_000, is_train_100k_10k = True)
+    
 
     print("Data preparation complete.")
 
