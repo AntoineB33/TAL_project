@@ -2,7 +2,6 @@ import os
 import subprocess
 from pathlib import Path
 import sys
-from sklearn.model_selection import train_test_split
 
 # Set Moses home directory (relative to the project location)
 MOUSE_HOME = "/home/semmar/Training/SMT"
