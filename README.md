@@ -8,11 +8,19 @@ to run the Python programs :
 - do the same with EMEA.en-fr.txt
 
 
+
+conda activate env_opennmt
+
 cd data/III_Evaluation_lemme/
 onmt_build_vocab -config run_1_en_to_fr.yaml -n_sample 10000
 onmt_build_vocab -config run_1_fr_to_en.yaml -n_sample 10000
 onmt_build_vocab -config run_2_en_to_fr.yaml -n_sample 10000
 onmt_build_vocab -config run_2_fr_to_en.yaml -n_sample 10000
+
+onmt_train -config run_1_en_to_fr.yaml
+onmt_train -config run_1_fr_to_en.yaml
+onmt_train -config run_2_en_to_fr.yaml
+onmt_train -config run_2_fr_to_en.yaml
 
 
 
