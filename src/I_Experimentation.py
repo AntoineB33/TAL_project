@@ -10,11 +10,11 @@ if __name__ == "__main__":
     lines = {}
     
     # Change to data directory
-    os.chdir(Path("data/I_Experimentation/data_preparation/TRAIN_DEV_TEST_joints"))
+    os.chdir(Path("data/I_Experimentation/data_preparation"))
     
-    prepare_data(lines, "Europarl_train_10k", "", "Europarl_train_10k", tokenize=False, is_exo_3 = is_exo_3)
-    prepare_data(lines, "Europarl_dev_1k", "", "Europarl_dev_1k", tokenize=False, is_exo_3 = is_exo_3)
-    prepare_data(lines, "Europarl_test_500", "", "Europarl_test_500", tokenize=False, is_exo_3 = is_exo_3)
+    prepare_data(lines, "", "Europarl_train_10k", end = 10_000, toTokenize=False, is_exo_3 = False)
+    prepare_data(lines, "", "Europarl_dev_1k", start = 10_000, length = 1_000, toTokenize=False, is_exo_3 = False)
+    prepare_data(lines, "", "Europarl_test_500", start = 11_000, length = 500, toTokenize=False, is_exo_3 = False)
 
     # Change back to the original directory
-    os.chdir(Path("../../../../.."))
+    os.chdir(Path("../../../.."))

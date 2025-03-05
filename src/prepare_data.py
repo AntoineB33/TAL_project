@@ -10,18 +10,12 @@ from pathlib import Path
 
 # Set Moses home directory (relative to the project location)
 MOUSE_HOME = "/home/semmar/Training/SMT"
-MOSES_HOME = "../../../../../Training/SMT" # TO_EDIT_BEFORE_DELIVERY
-
-
-# Ensure the necessary NLTK data is downloaded
-nltk.download('wordnet')
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
+MOSES_HOME = "../../../../Training/SMT" # TO_EDIT_BEFORE_DELIVERY
 
 
 def getLines(lines, input_path):
     # process the content of the file if not already processed
-    if not lines[input_path]:
+    if input_path not in lines:
         try:
             with open(input_path, 'r', encoding='utf-8') as f:
                 lines[input_path] = f.readlines()
@@ -68,19 +62,19 @@ def get_wordnet_pos(word):
     tag_dict = {"J": 'a', "N": 'n', "V": 'v', "R": 'r'}
     return tag_dict.get(tag, 'n')
 
-def prepare_data(lines: dict[str: list[str]], outputPath: str, outputName: str, start = 0, end = -1, tokenize = True, overwrite = False, is_train_100k_10k = False, inputPath = "../../Europarl.en-fr.txt/Europarl.en-fr", is_exo_3 = False):
-    if overwrite or not (Path(outputPath + outputName + ".en").exists() and Path(outputPath + outputName + ".fr").exists()) or is_train_100k_10k and not (Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.en").exists() and Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.fr").exists()):
+def prepare_data(lines: dict[str: list[str]], outputPath: str, outputName: str, start = 0, length = -1, toTokenize = True, overwrite = False, is_train_100k_10k = False, inputPath = "../../Europarl.en-fr.txt/Europarl.en-fr", is_exo_3 = False):
+    if overwrite or not (Path(outputPath + outputName + ".tok.true.clean.en").exists() and Path(outputPath + outputName + ".tok.true.clean.fr").exists()) or is_train_100k_10k and not (Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.en").exists() and Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.fr").exists()):
         for lang in ["en", "fr"]:
             # a. Splitting data
             print("Splitting data...")
             getLines(lines, inputPath+"."+lang)
             with open(outputName+"."+lang, 'w', encoding='utf-8') as f:
-                if end == -1:
+                if length == -1:
                     f.writelines(lines[inputPath+"."+lang][start:])
                 else:
-                    f.writelines(lines[inputPath+"."+lang][start:end])
+                    f.writelines(lines[inputPath+"."+lang][start:start + length])
 
-            if tokenize:
+            if toTokenize:
                 # b. Tokenization
                 print("Tokenizing...")
                 tokenize(outputName+"."+lang, outputName+".tok."+lang, lang)
@@ -113,9 +107,9 @@ def prepare_data(lines: dict[str: list[str]], outputPath: str, outputName: str, 
                     # e. Combining corpora
                     print("Combining corpora...")
                     train_lines = []
-                    with open("../../TRAIN_data/Europarl_train_100k.tok.true.clean."+lang, 'r', encoding='utf-8') as f:
+                    with open("../TRAIN_data/Europarl_train_100k.tok.true.clean."+lang, 'r', encoding='utf-8') as f:
                         train_lines += f.readlines()
-                    with open("../../TRAIN_data/EMEA_train_10k.tok.true.clean."+lang, 'r', encoding='utf-8') as f:
+                    with open("../TRAIN_data/EMEA_train_10k.tok.true.clean."+lang, 'r', encoding='utf-8') as f:
                         train_lines += f.readlines()
-                    with open("../../TRAIN_data/Europarl_EMEA_train_100k_10k.tok.true.clean."+lang, 'w', encoding='utf-8') as f:
+                    with open("../TRAIN_data/Europarl_EMEA_train_100k_10k.tok.true.clean."+lang, 'w', encoding='utf-8') as f:
                         f.writelines(train_lines)

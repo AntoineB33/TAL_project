@@ -149,7 +149,7 @@ if __name__ == "__main__":
         clean_corpus("Europarl_dev_3750.tok.true", "fr", "en", 
                     "../../DEV_data/Europarl_dev_3750.tok.true.clean", 1, 80)
     
-    if 0:
+    if 1:
         # for the test, getting random pairs of lines inside the domain using train_test_split
         print("preparing test data for inside the domain")
         getLines(lines, "Europarl.en-fr.en")
