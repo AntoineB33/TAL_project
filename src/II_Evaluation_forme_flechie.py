@@ -1,12 +1,9 @@
-from I_Experimentation import *
 from sklearn.model_selection import train_test_split
 
+from I_Experimentation import *
 
-if __name__ == "__main__":
-    args = sys.argv[1:]
-    #args = ["no_new_test"]
-    #args = ["test_not_random"]
 
+def II_Evaluation_forme_flechie(args: list[str]):
     lines = {}
     
     # Change to data directory
@@ -44,6 +41,13 @@ if __name__ == "__main__":
     
 
     print("Data preparation complete.")
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    #args = ["no_new_test"]
+    #args = ["test_not_random"]
+
+    II_Evaluation_forme_flechie(args)
 
 
     # commandes wsl pour utiliser entraîner et évaluer les modèles
