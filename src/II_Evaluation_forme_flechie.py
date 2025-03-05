@@ -3,15 +3,16 @@ from sklearn.model_selection import train_test_split
 from I_Experimentation import *
 
 
-def II_Evaluation_forme_flechie(args: list[str]):
+def prepare_all_data(data_folder, *args):
+    is_exo_3 = data_folder == "III_Evaluation_lemme"
     lines = {}
     
     # Change to data directory
-    os.chdir(Path("data/II_Evaluation_forme_flechie/data_preparation"))
+    os.chdir(Path(f"data/{data_folder}/data_preparation"))
     
-    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr", "../../TRAIN_data/", "Europarl_train_100k", end = 100_000)
+    prepare_data(lines, "../../TRAIN_data/", "Europarl_train_100k", end = 100_000, is_exo_3 = is_exo_3)
 
-    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr", "../../DEV_data/", "Europarl_dev_3750", start = 100_000, end = 103_750)
+    prepare_data(lines, "../../Europarl.en-fr.txt/Europarl.en-fr", "../../DEV_data/", "Europarl_dev_3750", start = 100_000, end = 103_750, is_exo_3 = is_exo_3)
 
     if "no_new_test" not in args or not (Path("../../TEST_data/Europarl_test_in_500.tok.true.clean.en").exists() and Path("../../TEST_data/Europarl_test_in_500.tok.true.clean.en").exists()):
         # for the test, getting random pairs of lines inside the domain using train_test_split
@@ -23,7 +24,7 @@ def II_Evaluation_forme_flechie(args: list[str]):
             f.writelines(test_en_lines)
         with open("../../TEST_data/Europarl_test_in_500.fr", 'w', encoding='utf-8') as f:
             f.writelines(test_fr_lines)
-        prepare_data(lines, "../../TEST_data/Europarl_test_in_500", "../../TEST_data/", "Europarl_test_in_500", overwrite = True)
+        prepare_data(lines, "../../TEST_data/Europarl_test_in_500", "../../TEST_data/", "Europarl_test_in_500", overwrite = True, is_exo_3 = is_exo_3)
 
         # for the test, getting random pairs of lines outside the domain using train_test_split
         print("preparing test data for outside the domain")
@@ -34,10 +35,10 @@ def II_Evaluation_forme_flechie(args: list[str]):
             f.writelines(test_en_lines)
         with open("../../TEST_data/Europarl_test_out_500.fr", 'w', encoding='utf-8') as f:
             f.writelines(test_fr_lines)
-        prepare_data(lines, "../../TEST_data/Europarl_test_out_500", "../../TEST_data/", "Europarl_test_out_500", overwrite = True)
+        prepare_data(lines, "../../TEST_data/Europarl_test_out_500", "../../TEST_data/", "Europarl_test_out_500", overwrite = True, is_exo_3 = is_exo_3)
 
     # Change to data directory
-    prepare_data(lines, "EMEA.en-fr.txt/EMEA.en-fr", "../../TRAIN_data/", "EMEA_train_10k", end = 10_000, is_train_100k_10k = True)
+    prepare_data(lines, "EMEA.en-fr.txt/EMEA.en-fr", "../../TRAIN_data/", "EMEA_train_10k", end = 10_000, is_train_100k_10k = True, is_exo_3 = is_exo_3)
     
 
     print("Data preparation complete.")
@@ -47,15 +48,9 @@ if __name__ == "__main__":
     #args = ["no_new_test"]
     #args = ["test_not_random"]
 
-    II_Evaluation_forme_flechie(args)
+    prepare_all_data("II_Evaluation_forme_flechie", *args)
 
 
-    # commandes wsl pour utiliser entraîner et évaluer les modèles
-
-    #conda activate env_opennmt
-    #cd data/II_Evaluation_forme_flechie
-    #onmt_translate -model run_1/run/model_step_2500.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_2500.txt -gpu 0 -verbose
-    #../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_1/pred_in_2500.txt
 
 
 
