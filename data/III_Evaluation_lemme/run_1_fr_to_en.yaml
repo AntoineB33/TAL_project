@@ -1,0 +1,26 @@
+## Where the samples will be written
+save_data: run_1_fr_to_en/run
+## Where the vocab(s) will be written
+src_vocab: run_1_fr_to_en/run/src_vocab.src
+tgt_vocab: run_1_fr_to_en/run/tgt_vocab.tgt
+# Prevent overwriting existing files in the folder
+overwrite: False
+
+# Corpus opts:
+data:
+    train:
+        path_src: TRAIN_data/Europarl_train_100k.tok.true.clean.fr
+        path_tgt: TRAIN_data/Europarl_train_100k.tok.true.clean.en
+    valid:
+        path_src: DEV_data/Europarl_dev_3750.tok.true.clean.fr
+        path_tgt: DEV_data/Europarl_dev_3750.tok.true.clean.en
+
+# Train on a single GPU
+world_size: 1
+gpu_ranks: [0]
+
+# Where to save the checkpoints
+save_model: run_1_fr_to_en/run/model
+save_checkpoint_steps: 500
+train_steps: 10000
+valid_steps: 500

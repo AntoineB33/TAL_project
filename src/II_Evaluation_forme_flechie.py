@@ -39,7 +39,7 @@ def prepare_all_data(data_folder, *args):
             f.writelines(test_fr_lines)
         prepare_data(lines, "../TEST_data/", "Europarl_test_out_500", overwrite = True, is_exo_3 = is_exo_3, inputPath="../TEST_data/Europarl_test_out_500")
 
-    prepare_data(lines, "../TRAIN_data/", "EMEA_train_10k", start = 13_750, length = 10_000, is_train_100k_10k = True, is_exo_3 = is_exo_3, inputPath="../EMEA.en-fr.txt/EMEA.en-fr")
+    prepare_data(lines, "../TRAIN_data/", "EMEA_train_10k", start = 13_750, length = 10_000, is_train_100k_10k = True, is_exo_3 = is_exo_3, inputPath="../../EMEA.en-fr.txt/EMEA.en-fr")
     
 
     print("Data preparation complete.")

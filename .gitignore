@@ -1,4 +1,8 @@
 **/model*
-data/I_Experimentation/TRAIN_DEV_TEST_joints/data_preparation
-data/II_Evaluation_forme_flechie/data_preparation
-data/III_Evaluation_lemme/data_preparation
+
+data/I_Experimentation/TRAIN_DEV_TEST_joints/data_preparation/**
+data/II_Evaluation_forme_flechie/data_preparation/**
+data/III_Evaluation_lemme/data_preparation/**
+
+data/Europarl.en-fr.txt/**
+data/EMEA.en-fr.txt/**

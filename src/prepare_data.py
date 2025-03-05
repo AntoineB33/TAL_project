@@ -50,6 +50,13 @@ def clean_corpus(base_name, lang1, lang2, output_base, min_len, max_len):
            str(min_len), str(max_len)]
     subprocess.run(cmd, check=True)
 
+def download_nltk_resources():
+    nltk.download('wordnet')
+    nltk.download('punkt')
+    nltk.download('punkt_tab')
+    nltk.download('averaged_perceptron_tagger')
+    nltk.download('averaged_perceptron_tagger_eng')
+
 def lemmatize_text(text: str) -> str:
     lemmatizer = WordNetLemmatizer()
     tokens = word_tokenize(text)
