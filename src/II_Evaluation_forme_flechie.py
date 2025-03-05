@@ -86,9 +86,7 @@ if __name__ == "__main__":
     lines = {"Europarl.en-fr.en": [],
              "Europarl.en-fr.fr": [],
              "EMEA.en-fr.en": [],
-             "EMEA.en-fr.fr": [],
-             "../../TEST_data/Europarl_out_domain.tok.true.clean.en": [],
-             "../../TEST_data/Europarl_out_domain.tok.true.clean.fr": []}
+             "EMEA.en-fr.fr": []}
 
     # Change to data directory
     os.chdir(Path("data/II_Evaluation_forme_flechie/data_preparation/Europarl.en-fr.txt"))
