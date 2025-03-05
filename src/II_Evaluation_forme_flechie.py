@@ -32,15 +32,14 @@ def prepare_all_data(data_folder, *args):
         print("preparing test data for outside the domain")
         getLines(lines, "../../EMEA.en-fr.txt/EMEA.en-fr.en")
         getLines(lines, "../../EMEA.en-fr.txt/EMEA.en-fr.fr")
-        _, test_en_lines, _, test_fr_lines = train_test_split(lines["EMEA.en-fr.en"][10_000:], lines["EMEA.en-fr.fr"][10_000:], test_size=500)
+        _, test_en_lines, _, test_fr_lines = train_test_split(lines["../../EMEA.en-fr.txt/EMEA.en-fr.en"][10_000:], lines["../../EMEA.en-fr.txt/EMEA.en-fr.fr"][10_000:], test_size=500)
         with open("../TEST_data/Europarl_test_out_500.en", 'w', encoding='utf-8') as f:
             f.writelines(test_en_lines)
         with open("../TEST_data/Europarl_test_out_500.fr", 'w', encoding='utf-8') as f:
             f.writelines(test_fr_lines)
         prepare_data(lines, "../TEST_data/", "Europarl_test_out_500", overwrite = True, is_exo_3 = is_exo_3, inputPath="../TEST_data/Europarl_test_out_500")
 
-    # Change to data directory
-    prepare_data(lines, "../TRAIN_data/", "EMEA_train_10k", end = 10_000, is_train_100k_10k = True, is_exo_3 = is_exo_3, inputPath="../EMEA.en-fr.txt/EMEA.en-fr")
+    prepare_data(lines, "../TRAIN_data/", "EMEA_train_10k", start = 13_750, length = 10_000, is_train_100k_10k = True, is_exo_3 = is_exo_3, inputPath="../EMEA.en-fr.txt/EMEA.en-fr")
     
 
     print("Data preparation complete.")
