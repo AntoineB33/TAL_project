@@ -46,7 +46,7 @@ def clean_corpus(base_name, lang1, lang2, output_base, min_len, max_len):
            str(min_len), str(max_len)]
     subprocess.run(cmd, check=True)
 
-def prepare_data(lines: dict[str: list[str]], inputPath: str, outputName: str, outputPath, start = 0, end = -1, overwrite = False, is_train_100k_10k = False):
+def prepare_data(lines: dict[str: list[str]], inputPath: str, outputPath: str, outputName: str, start = 0, end = -1, tokenize = True, overwrite = False, is_train_100k_10k = False):
     if overwrite or not (Path(outputPath + outputName + ".en").exists() and Path(outputPath + outputName + ".fr").exists()) or is_train_100k_10k and not (Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.en").exists() and Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.fr").exists()):
         for lang in ["en", "fr"]:
             # a. Splitting data
@@ -58,9 +58,10 @@ def prepare_data(lines: dict[str: list[str]], inputPath: str, outputName: str, o
                 else:
                     f.writelines(lines[inputPath+"."+lang][start:end])
 
-            # b. Tokenization
-            print("Tokenizing...")
-            tokenize(outputName+"."+lang, outputName+".tok."+lang, lang)
+            if tokenize:
+                # b. Tokenization
+                print("Tokenizing...")
+                tokenize(outputName+"."+lang, outputName+".tok."+lang, lang)
 
             # c. Truecasing
             print("Truecasing...")
@@ -97,6 +98,10 @@ if __name__ == "__main__":
     
     # Change to data directory
     os.chdir(Path("data/I_Experimentation/data_preparation/TRAIN_DEV_TEST_joints"))
+    
+    prepare_data(lines, "Europarl_train_10k", "", "Europarl_train_10k", tokenize=False)
+    prepare_data(lines, "Europarl_dev_1k", "", "Europarl_dev_1k", tokenize=False)
+    prepare_data(lines, "Europarl_test_500", "", "Europarl_test_500", tokenize=False)
 
-
-
+    # Change back to the original directory
+    os.chdir(Path("../../../../.."))

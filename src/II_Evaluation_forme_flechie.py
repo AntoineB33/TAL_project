@@ -11,9 +11,9 @@ if __name__ == "__main__":
     # Change to data directory
     os.chdir(Path("data/II_Evaluation_forme_flechie/data_preparation"))
     
-    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr", "Europarl_train_100k", "../../TRAIN_data/", end = 100_000)
+    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr", "../../TRAIN_data/", "Europarl_train_100k", end = 100_000)
 
-    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr", "Europarl_dev_3750", "../../DEV_data/", start = 100_000, end = 103_750)
+    prepare_data(lines, "Europarl.en-fr.txt/Europarl.en-fr", "../../DEV_data/", "Europarl_dev_3750", start = 100_000, end = 103_750)
 
     if "no_new_test" not in args or not (Path("../../TEST_data/Europarl_test_in_500.tok.true.clean.en").exists() and Path("../../TEST_data/Europarl_test_in_500.tok.true.clean.en").exists()):
         # for the test, getting random pairs of lines inside the domain using train_test_split
@@ -25,7 +25,7 @@ if __name__ == "__main__":
             f.writelines(test_en_lines)
         with open("../../TEST_data/Europarl_test_in_500.fr", 'w', encoding='utf-8') as f:
             f.writelines(test_fr_lines)
-        prepare_data(lines, "../../TEST_data/Europarl_test_in_500", "Europarl_test_in_500", "../../TEST_data/", overwrite = True)
+        prepare_data(lines, "../../TEST_data/Europarl_test_in_500", "../../TEST_data/", "Europarl_test_in_500", overwrite = True)
 
         # for the test, getting random pairs of lines outside the domain using train_test_split
         print("preparing test data for outside the domain")
@@ -36,10 +36,10 @@ if __name__ == "__main__":
             f.writelines(test_en_lines)
         with open("../../TEST_data/Europarl_test_out_500.fr", 'w', encoding='utf-8') as f:
             f.writelines(test_fr_lines)
-        prepare_data(lines, "../../TEST_data/Europarl_test_out_500", "Europarl_test_out_500", "../../TEST_data/", overwrite = True)
+        prepare_data(lines, "../../TEST_data/Europarl_test_out_500", "../../TEST_data/", "Europarl_test_out_500", overwrite = True)
 
     # Change to data directory
-    prepare_data(lines, "EMEA.en-fr.txt/EMEA.en-fr", "EMEA_train_10k", "../../TRAIN_data/", end = 10_000, is_train_100k_10k = True)
+    prepare_data(lines, "EMEA.en-fr.txt/EMEA.en-fr", "../../TRAIN_data/", "EMEA_train_10k", end = 10_000, is_train_100k_10k = True)
     
 
     print("Data preparation complete.")
