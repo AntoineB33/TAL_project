@@ -213,13 +213,16 @@ if __name__ == "__main__":
 
     print("Data preparation complete.")
 
+    #conda activate env_opennmt
+
     # # Run 1
+    #cd data/II_Evaluation_forme_flechie
     # stdout, stderr, return_code = run_wsl_command("onmt_build_vocab -config run_1.yaml -n_sample 10000")
     # stdout, stderr, return_code = run_wsl_command("onmt_train -config run_1.yaml")
     # steps = 10000
     #onmt_translate -model run_1/run/model_step_2500.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_2500.txt -gpu 0 -verbose
     # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_{steps}.txt -gpu 0 -verbose")
-    #../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1/pred_in_2500.txt
+    #../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_1/pred_in_2500.txt
     # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1/pred_in_{steps}.txt")
     # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_1/pred_out_{steps}.txt -gpu 0 -verbose")
     # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_1/pred_out_{steps}.txt")

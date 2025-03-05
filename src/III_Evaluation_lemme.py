@@ -1,0 +1,5 @@
+import nltk
+from nltk.stem import WordNetLemmatizer
+nltk.download('wordnet')
+lemmatizer = WordNetLemmatizer()
+print("love :", lemmatizer.lemmatize("NLTK Lemmatization example above uses the “nltk.corpus.wordnet”, because lemmatization requires the part of speech tag value of the word within the sentence. Without understanding whether the word is used as a verb, noun, or adjective, performing the lemmatization with NLTK won’t be effective. To perform lemmatization with NLTK in an effective way, the “wordnet” and “pos” parameter of the NLTK.WordNetLemmatizer.lemmatize should be used. In the example above, we have specified the part of speech tag value of the lemmatization with NLTK as “wordnet.VERB”. It means that lemmatize the words “love, loving, loved” as a verb. Thus, all of them have the same result.", wordnet.VERB))
