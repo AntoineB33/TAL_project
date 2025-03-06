@@ -1,26 +1,26 @@
 ## Where the samples will be written
-save_data: TRAIN_DEV_TEST_joints/run
+save_data: TRAIN_DEV_TEST_joints_en_to_fr/run
 ## Where the vocab(s) will be written
-src_vocab: TRAIN_DEV_TEST_joints/run/src_vocab.src
-tgt_vocab: TRAIN_DEV_TEST_joints/run/tgt_vocab.tgt
+src_vocab: TRAIN_DEV_TEST_joints_en_to_fr/run/src_vocab.src
+tgt_vocab: TRAIN_DEV_TEST_joints_en_to_fr/run/tgt_vocab.tgt
 # Prevent overwriting existing files in the folder
 overwrite: False
 
 # Corpus opts:
 data:
     train:
-        path_src: TRAIN_DEV_TEST_joints/Europarl_train_10k.tok.true.clean.en
-        path_tgt: TRAIN_DEV_TEST_joints/Europarl_train_10k.tok.true.clean.fr
+        path_src: TRAIN_DEV_TEST_joints_en_to_fr/Europarl_train_10k.tok.true.clean.en
+        path_tgt: TRAIN_DEV_TEST_joints_en_to_fr/Europarl_train_10k.tok.true.clean.fr
     valid:
-        path_src: TRAIN_DEV_TEST_joints/Europarl_dev_1k.tok.true.clean.en
-        path_tgt: TRAIN_DEV_TEST_joints/Europarl_dev_1k.tok.true.clean.fr
+        path_src: TRAIN_DEV_TEST_joints_en_to_fr/Europarl_dev_1k.tok.true.clean.en
+        path_tgt: TRAIN_DEV_TEST_joints_en_to_fr/Europarl_dev_1k.tok.true.clean.fr
 
 # Train on a single GPU
 world_size: 1
 gpu_ranks: [0]
 
 # Where to save the checkpoints
-save_model: TRAIN_DEV_TEST_joints/run/model_en_to_fr
+save_model: TRAIN_DEV_TEST_joints_en_to_fr/run/model_en_to_fr
 save_checkpoint_steps: 500
 train_steps: 10000
 valid_steps: 5000
