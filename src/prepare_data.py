@@ -69,22 +69,22 @@ def get_wordnet_pos(word):
     tag_dict = {"J": 'a', "N": 'n', "V": 'v', "R": 'r'}
     return tag_dict.get(tag, 'n')
 
-def prepare_data(lines: dict[str: list[str]], outputPath: str, outputName: str, start = 0, length = -1, toTokenize = True, overwrite = False, is_train_100k_10k = False, inputPath = "../../Europarl.en-fr.txt/Europarl.en-fr", is_exo_3 = False):
+def prepare_data(lines: dict[str: list[str]], outputPath: str, outputName: str, start = 0, length = -1, overwrite = False, is_train_100k_10k = False, inputPath = "../../Europarl.en-fr.txt/Europarl.en-fr", is_exo_3 = False):
     if overwrite or not (Path(outputPath + outputName + ".tok.true.clean.en").exists() and Path(outputPath + outputName + ".tok.true.clean.fr").exists()) or is_train_100k_10k and not (Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.en").exists() and Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.fr").exists()):
         for lang in ["en", "fr"]:
-            # a. Splitting data
-            print("Splitting data...")
-            getLines(lines, inputPath+"."+lang)
-            with open(outputName+"."+lang, 'w', encoding='utf-8') as f:
-                if length == -1:
-                    f.writelines(lines[inputPath+"."+lang][start:])
-                else:
-                    f.writelines(lines[inputPath+"."+lang][start:start + length])
+            if not (start == 0 and length == -1):
+                # a. Splitting data
+                print("Splitting data...")
+                getLines(lines, inputPath+"."+lang)
+                with open(outputName+"."+lang, 'w', encoding='utf-8') as f:
+                    if length == -1:
+                        f.writelines(lines[inputPath+"."+lang][start:])
+                    else:
+                        f.writelines(lines[inputPath+"."+lang][start:start + length])
 
-            if toTokenize:
-                # b. Tokenization
-                print("Tokenizing...")
-                tokenize(outputName+"."+lang, outputName+".tok."+lang, lang)
+            # b. Tokenization
+            print("Tokenizing...")
+            tokenize(outputName+"."+lang, outputName+".tok."+lang, lang)
 
             # c. Truecasing
             print("Truecasing...")

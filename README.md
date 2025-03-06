@@ -25,6 +25,12 @@ onmt_train -config run_1_fr_to_en.yaml
 onmt_train -config run_2_en_to_fr.yaml
 onmt_train -config run_2_fr_to_en.yaml
 
+traduire dans le domaine :
+onmt_translate -model run_1_en_to_fr/run/model_step_2500.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1_en_to_fr/pred_in_2500.txt -gpu 0 -verbose
+
+mesurer les tests dans le domaine :
+../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_1_en_to_fr/pred_in_5000.txt
+
 
 cd ../II_Evaluation_forme_flechie
 
@@ -34,6 +40,37 @@ onmt_train -config run_1_fr_to_en.yaml
 onmt_train -config run_2_en_to_fr.yaml
 onmt_train -config run_2_fr_to_en.yaml
 
+entraîner les modèles :
+
+traduire dans le domaine :
+
+mesurer les tests dans le domaine :
+
+
+cd ../I_Experimentation
+
+créer les vocabulaires :
+onmt_build_vocab -config TRAIN_DEV_TEST_joints_en_to_fr.yaml -n_sample 10000
+onmt_build_vocab -config TRAIN_DEV_TEST_joints_fr_to_en.yaml -n_sample 10000
+
+entraîner les modèles :
+onmt_train -config TRAIN_DEV_TEST_joints_en_to_fr.yaml
+onmt_train -config TRAIN_DEV_TEST_joints_fr_to_en.yaml
+
+traduire dans le domaine :
+onmt_translate -model TRAIN_DEV_TEST_joints_en_to_fr/run/model_step_5000.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output TRAIN_DEV_TEST_joints_en_to_fr/pred_in_5000.txt -gpu 0 -verbose
+onmt_translate -model TRAIN_DEV_TEST_joints_fr_to_en/run/model_step_5000.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output TRAIN_DEV_TEST_joints_fr_to_en/pred_in_5000.txt -gpu 0 -verbose
+
+mesurer les tests dans le domaine :
+../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < TRAIN_DEV_TEST_joints_en_to_fr/pred_in_5000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < TRAIN_DEV_TEST_joints_fr_to_en/pred_in_5000.txt
+
+
+
+
+
+onmt_translate -model TRAIN_DEV_TEST_joints_en_to_fr/run/model_en_to_fr_step_4000.pt -src TEST_data/Europarl_test_500.tok.true.clean.fr -output TRAIN_DEV_TEST_joints_en_to_fr/pred_in_4000.txt -gpu 0 -verbose
+../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.en < TRAIN_DEV_TEST_joints_en_to_fr/pred_in_4000.txt
 
 
 
