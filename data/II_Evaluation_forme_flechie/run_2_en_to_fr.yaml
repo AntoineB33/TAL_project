@@ -12,8 +12,8 @@ data:
         path_src: TRAIN_data/Europarl_EMEA_train_100k_10k.tok.true.clean.en
         path_tgt: TRAIN_data/Europarl_EMEA_train_100k_10k.tok.true.clean.fr
     valid:
-        path_src: DEV_data/Europarl_dev_1k.tok.true.clean.en
-        path_tgt: DEV_data/Europarl_dev_1k.tok.true.clean.fr
+        path_src: DEV_data/Europarl_dev_3750.tok.true.clean.en
+        path_tgt: DEV_data/Europarl_dev_3750.tok.true.clean.fr
 
 # Train on a single GPU
 world_size: 1
@@ -22,5 +22,5 @@ gpu_ranks: [0]
 # Where to save the checkpoints
 save_model: run_2_en_to_fr/run/model
 save_checkpoint_steps: 500
-train_steps: 5000
+train_steps: 1000
 valid_steps: 500
