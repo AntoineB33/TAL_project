@@ -2,3 +2,4 @@
 **/data_preparation/**
 data/Europarl.en-fr.txt/**
 data/EMEA.en-fr.txt/**
+**/__pycache__

@@ -1,18 +1,13 @@
 import sys
 import subprocess
 from pathlib import Path
-import sqlite3
-print(sqlite3.sqlite_version)
-
 
 import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from pathlib import Path
 
-# from french_lefff_lemmatizer.french_lefff_lemmatizer import FrenchLefffLemmatizer
-# import spacy
-import stanza
+from french_lefff_lemmatizer.french_lefff_lemmatizer import FrenchLefffLemmatizer
 
 
 # Set Moses home directory (relative to the project location)
@@ -36,9 +31,9 @@ def tokenize(input_file, output_file, lang):
     
     with open(input_file, 'r', encoding='utf-8') as infile, \
          open(output_file, 'w', encoding='utf-8') as outfile:
-        result = subprocess.run("dir", shell=True, check=True, text=True, capture_output=True)
-        print(f"Command: ls")
-        print(f"Output: {result.stdout}")
+        # result = subprocess.run("dir", shell=True, check=True, text=True, capture_output=True)
+        # print(f"Command: ls")
+        # print(f"Output: {result.stdout}")
         subprocess.run(cmd, stdin=infile, stdout=outfile, check=True)
 
 def train_truecaser(corpus_path, model_path):
@@ -61,7 +56,7 @@ def clean_corpus(base_name, lang1, lang2, output_base, min_len, max_len):
     subprocess.run(cmd, check=True)
 
 def download_nltk_resources():
-    global nlp
+    global wordnet_lemmatizer, french_lemmatizer
     nltk.download('wordnet')
     nltk.download('punkt')
     nltk.download('punkt_tab')
@@ -69,31 +64,17 @@ def download_nltk_resources():
     nltk.download('averaged_perceptron_tagger_eng')
     
     nltk.download('verbnet')
-
-    # nlp = spacy.load("fr_core_news_md")
-
-    stanza.download('fr')
-    nlp = stanza.Pipeline('fr')
-inc=0
-def lemmatize_french(text):
-    global nlp
-    global inc
-    doc = nlp(text)
-    print(inc)
-    inc += 1
-    return ' '.join(word.lemma for sentence in doc.sentences for word in sentence.words)
     
-# def lemmatize_french(text):
-#     doc = nlp(text)
-#     return ' '.join(token.lemma_ for token in doc)
+    wordnet_lemmatizer = WordNetLemmatizer()
+    french_lemmatizer = FrenchLefffLemmatizer()
 
 def lemmatize_text(lang: str, text: str) -> str:
+    global wordnet_lemmatizer, french_lemmatizer
     lemmatizer = None
     if lang == "en":
-        lemmatizer = WordNetLemmatizer()
+        lemmatizer = wordnet_lemmatizer
     elif lang == "fr":
-        # lemmatizer = FrenchLefffLemmatizer()
-        return lemmatize_french(text)
+        lemmatizer = french_lemmatizer
     else:
         raise ValueError(f"Language '{lang}' not supported")
     tokens = word_tokenize(text)
