@@ -65,27 +65,24 @@ onmt_train -config run_2_en_to_fr.yaml
 onmt_train -config run_2_fr_to_en.yaml
 
 traduire dans le domaine :
-onmt_translate -model run_1_en_to_fr/run/model_step_1000.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.en -output run_1_en_to_fr/pred_in_1000.txt -gpu 0 -verbose
+onmt_translate -model run_1_en_to_fr/run/model_step_10000.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.en -output run_1_en_to_fr/pred_in_10000.txt -gpu 0 -verbose
+onmt_translate -model run_1_en_to_fr/run/model_step_10000.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.en -output run_1_en_to_fr/pred_out_10000.txt -gpu 0 -verbose
 onmt_translate -model run_1_fr_to_en/run/model_step_1000.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1_fr_to_en/pred_in_1000.txt -gpu 0 -verbose
-onmt_translate -model run_1_en_to_fr/run/model_step_1000.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.en -output run_1_en_to_fr/pred_out_1000.txt -gpu 0 -verbose
 onmt_translate -model run_1_fr_to_en/run/model_step_1000.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_1_fr_to_en/pred_out_1000.txt -gpu 0 -verbose
-onmt_translate -model run_2_en_to_fr/run/model_step_1000.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.en -output run_2_en_to_fr/pred_in_1000.txt -gpu 0 -verbose
+onmt_translate -model run_2_en_to_fr/run/model_step_10000.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.en -output run_2_en_to_fr/pred_in_10000.txt -gpu 0 -verbose
+onmt_translate -model run_2_en_to_fr/run/model_step_10000.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.en -output run_2_en_to_fr/pred_out_10000.txt -gpu 0 -verbose
 onmt_translate -model run_2_fr_to_en/run/model_step_1000.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_2_fr_to_en/pred_in_1000.txt -gpu 0 -verbose
-onmt_translate -model run_2_en_to_fr/run/model_step_1000.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.en -output run_2_en_to_fr/pred_out_1000.txt -gpu 0 -verbose
 onmt_translate -model run_2_fr_to_en/run/model_step_1000.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_2_fr_to_en/pred_out_1000.txt -gpu 0 -verbose
 
 mesurer les tests dans le domaine :
-../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1_en_to_fr/pred_in_1000.txt
-../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_1_fr_to_en/pred_in_1000.txt
-../../src/multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_1_en_to_fr/pred_out_1000.txt
-../../src/multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.en < run_1_fr_to_en/pred_out_1000.txt
-../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_2_en_to_fr/pred_in_1000.txt
-../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_2_fr_to_en/pred_in_1000.txt
-../../src/multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_2_en_to_fr/pred_out_1000.txt
-../../src/multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.en < run_2_fr_to_en/pred_out_1000.txt
-
-
-
+../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1_en_to_fr/pred_in_10000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_1_en_to_fr/pred_out_10000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_1_fr_to_en/pred_in_10000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.en < run_1_fr_to_en/pred_out_10000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_2_en_to_fr/pred_in_10000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_2_en_to_fr/pred_out_10000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_2_fr_to_en/pred_in_10000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.en < run_2_fr_to_en/pred_out_10000.txt
 
 
 

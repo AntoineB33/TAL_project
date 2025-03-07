@@ -7,6 +7,8 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from pathlib import Path
 
+from french_lefff_lemmatizer.french_lefff_lemmatizer import FrenchLefffLemmatizer
+
 
 # Set Moses home directory (relative to the project location)
 MOUSE_HOME = "/home/semmar/Training/SMT"
@@ -56,11 +58,19 @@ def download_nltk_resources():
     nltk.download('punkt_tab')
     nltk.download('averaged_perceptron_tagger')
     nltk.download('averaged_perceptron_tagger_eng')
+    
+    nltk.download('verbnet')
 
 def lemmatize_text(text: str) -> str:
     lemmatizer = WordNetLemmatizer()
     tokens = word_tokenize(text)
     lemmatized_tokens = [lemmatizer.lemmatize(token, get_wordnet_pos(token)) for token in tokens]
+    return ' '.join(lemmatized_tokens)
+
+def lemmatize_french(text: str) -> str:
+    french_lemmatizer = FrenchLefffLemmatizer()
+    tokens = word_tokenize(text)
+    lemmatized_tokens = [french_lemmatizer.lemmatize(token) for token in tokens]
     return ' '.join(lemmatized_tokens)
 
 def get_wordnet_pos(word):
