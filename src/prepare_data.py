@@ -10,7 +10,9 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from pathlib import Path
 
-from french_lefff_lemmatizer.french_lefff_lemmatizer import FrenchLefffLemmatizer
+# from french_lefff_lemmatizer.french_lefff_lemmatizer import FrenchLefffLemmatizer
+# import spacy
+import stanza
 
 
 # Set Moses home directory (relative to the project location)
@@ -34,6 +36,9 @@ def tokenize(input_file, output_file, lang):
     
     with open(input_file, 'r', encoding='utf-8') as infile, \
          open(output_file, 'w', encoding='utf-8') as outfile:
+        result = subprocess.run("dir", shell=True, check=True, text=True, capture_output=True)
+        print(f"Command: ls")
+        print(f"Output: {result.stdout}")
         subprocess.run(cmd, stdin=infile, stdout=outfile, check=True)
 
 def train_truecaser(corpus_path, model_path):
@@ -56,6 +61,7 @@ def clean_corpus(base_name, lang1, lang2, output_base, min_len, max_len):
     subprocess.run(cmd, check=True)
 
 def download_nltk_resources():
+    global nlp
     nltk.download('wordnet')
     nltk.download('punkt')
     nltk.download('punkt_tab')
@@ -64,12 +70,27 @@ def download_nltk_resources():
     
     nltk.download('verbnet')
 
+    # nlp = spacy.load("fr_core_news_md")
+
+    stanza.download('fr')
+    nlp = stanza.Pipeline('fr')
+
+def lemmatize_french(text):
+    global nlp
+    doc = nlp(text)
+    return ' '.join(word.lemma for sentence in doc.sentences for word in sentence.words)
+    
+# def lemmatize_french(text):
+#     doc = nlp(text)
+#     return ' '.join(token.lemma_ for token in doc)
+
 def lemmatize_text(lang: str, text: str) -> str:
     lemmatizer = None
     if lang == "en":
         lemmatizer = WordNetLemmatizer()
     elif lang == "fr":
-        lemmatizer = FrenchLefffLemmatizer()
+        # lemmatizer = FrenchLefffLemmatizer()
+        return lemmatize_french(text)
     else:
         raise ValueError(f"Language '{lang}' not supported")
     tokens = word_tokenize(text)

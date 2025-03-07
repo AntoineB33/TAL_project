@@ -10,7 +10,6 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "C:/Users/abarb/Documents/travail/Polytech Paris Saclay/cours/et5/TAL/projet/TAL_project",
         },
         {
             "name": "Python Debugger: WSL OpenNMT",
@@ -19,8 +18,17 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "python": "/home/antoine/anaconda3/envs/env_opennmt/bin/python",
-            "cwd": "C:/Users/abarb/Documents/travail/Polytech Paris Saclay/cours/et5/TAL/projet/TAL_project",
+            "cwd": "${workspaceFolder}",
             "justMyCode": true
+        },
+        {
+          "name": "Python Debugger: WSL (System Python)",
+          "type": "debugpy",
+          "request": "launch",
+          "program": "${file}",
+          "console": "integratedTerminal",
+          "python": "/usr/bin/python3",
+          "justMyCode": true,
         }
     ]
 }
