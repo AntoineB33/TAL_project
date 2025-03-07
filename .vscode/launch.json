@@ -5,13 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "C:/Users/abarb/Documents/travail/Polytech Paris Saclay/cours/et5/TAL/projet/TAL_project",
+        },
+        {
             "name": "Python Debugger: WSL OpenNMT",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "python": "/home/antoine/anaconda3/envs/env_opennmt/bin/python",
-            "cwd": "${workspaceFolder}",
+            "cwd": "C:/Users/abarb/Documents/travail/Polytech Paris Saclay/cours/et5/TAL/projet/TAL_project",
             "justMyCode": true
         }
     ]

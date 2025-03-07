@@ -1,6 +1,9 @@
 import sys
 import subprocess
 from pathlib import Path
+import sqlite3
+print(sqlite3.sqlite_version)
+
 
 import nltk
 from nltk.stem import WordNetLemmatizer
@@ -61,16 +64,16 @@ def download_nltk_resources():
     
     nltk.download('verbnet')
 
-def lemmatize_text(text: str) -> str:
-    lemmatizer = WordNetLemmatizer()
+def lemmatize_text(lang: str, text: str) -> str:
+    lemmatizer = None
+    if lang == "en":
+        lemmatizer = WordNetLemmatizer()
+    elif lang == "fr":
+        lemmatizer = FrenchLefffLemmatizer()
+    else:
+        raise ValueError(f"Language '{lang}' not supported")
     tokens = word_tokenize(text)
-    lemmatized_tokens = [lemmatizer.lemmatize(token, get_wordnet_pos(token)) for token in tokens]
-    return ' '.join(lemmatized_tokens)
-
-def lemmatize_french(text: str) -> str:
-    french_lemmatizer = FrenchLefffLemmatizer()
-    tokens = word_tokenize(text)
-    lemmatized_tokens = [french_lemmatizer.lemmatize(token) for token in tokens]
+    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
     return ' '.join(lemmatized_tokens)
 
 def get_wordnet_pos(word):
@@ -105,7 +108,7 @@ def prepare_data(lines: dict[str: list[str]], outputPath: str, outputName: str, 
             apply_truecaser("truecase-model_train."+lang, outputName+".tok."+lang, 
                             outputName+".tok.true."+lang)
             
-            if is_exo_3 and lang == "en":
+            if is_exo_3:
                 # d. Lemmatization (only for English)
                 print("Lemmatizing...")
                 with open(outputName + ".tok.true." + lang, 'r', encoding='utf-8') as f:
