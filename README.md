@@ -4,7 +4,7 @@
 google doc : https://docs.google.com/document/d/1chrQMpC4Pnln_k_ZKWvhCj1Lqpx-1u8CuYIMA3qcRpE/edit?tab=t.0
 
 to run the Python programs :
-- place the Europarl.en-fr.txt folder, containing Europarl.en-fr.fr, at data/
+- place the Europarl.en-fr.txt folder, containing Europarl.en-fr.fr, in data/
 - do the same with EMEA.en-fr.txt
 
 
@@ -108,7 +108,7 @@ onmt_translate -model TRAIN_DEV_TEST_joints_fr_to_en/run/model_step_2500.pt -src
 
 mesurer les tests dans le domaine :
 ../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.fr < TRAIN_DEV_TEST_joints_en_to_fr/pred_2500.txt
-../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.en < TRAIN_DEV_TEST_joints_fr_to_en/pred_1000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.en < TRAIN_DEV_TEST_joints_fr_to_en/pred_2500.txt
 
 
 
