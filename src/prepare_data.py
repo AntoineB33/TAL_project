@@ -74,10 +74,13 @@ def download_nltk_resources():
 
     stanza.download('fr')
     nlp = stanza.Pipeline('fr')
-
+inc=0
 def lemmatize_french(text):
     global nlp
+    global inc
     doc = nlp(text)
+    print(inc)
+    inc += 1
     return ' '.join(word.lemma for sentence in doc.sentences for word in sentence.words)
     
 # def lemmatize_french(text):
@@ -133,7 +136,7 @@ def prepare_data(lines: dict[str: list[str]], outputPath: str, outputName: str, 
                 # d. Lemmatization (only for English)
                 print("Lemmatizing...")
                 with open(outputName + ".tok.true." + lang, 'r', encoding='utf-8') as f:
-                    lemmatized_lines = [lemmatize_text(line) for line in f]
+                    lemmatized_lines = [lemmatize_text(lang, line) for line in f.readlines()]
                 with open(outputName + ".tok.true.lem." + lang, 'w', encoding='utf-8') as f:
                     f.writelines(lemmatized_lines)
             
