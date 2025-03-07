@@ -103,11 +103,11 @@ onmt_train -config TRAIN_DEV_TEST_joints_en_to_fr.yaml
 onmt_train -config TRAIN_DEV_TEST_joints_fr_to_en.yaml
 
 traduire dans le domaine :
-onmt_translate -model TRAIN_DEV_TEST_joints_en_to_fr/run/model_step_1000.pt -src TEST_data/Europarl_test_500.tok.true.clean.en -output TRAIN_DEV_TEST_joints_en_to_fr/pred_1000.txt -gpu 0 -verbose
-onmt_translate -model TRAIN_DEV_TEST_joints_fr_to_en/run/model_step_1000.pt -src TEST_data/Europarl_test_500.tok.true.clean.fr -output TRAIN_DEV_TEST_joints_fr_to_en/pred_1000.txt -gpu 0 -verbose
+onmt_translate -model TRAIN_DEV_TEST_joints_en_to_fr/run/model_step_2500.pt -src TEST_data/Europarl_test_500.tok.true.clean.en -output TRAIN_DEV_TEST_joints_en_to_fr/pred_2500.txt -gpu 0 -verbose
+onmt_translate -model TRAIN_DEV_TEST_joints_fr_to_en/run/model_step_2500.pt -src TEST_data/Europarl_test_500.tok.true.clean.fr -output TRAIN_DEV_TEST_joints_fr_to_en/pred_2500.txt -gpu 0 -verbose
 
 mesurer les tests dans le domaine :
-../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.fr < TRAIN_DEV_TEST_joints_en_to_fr/pred_1000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.fr < TRAIN_DEV_TEST_joints_en_to_fr/pred_2500.txt
 ../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.en < TRAIN_DEV_TEST_joints_fr_to_en/pred_1000.txt
 
 

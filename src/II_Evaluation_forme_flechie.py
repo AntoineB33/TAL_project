@@ -12,9 +12,9 @@ def prepare_all_data(data_folder, *args):
     # Change to data directory
     os.chdir(Path(f"data/{data_folder}/data_preparation"))
     
-    prepare_data(lines, "../TRAIN_data/", "Europarl_train_100k", length = 100_000, is_exo_3 = is_exo_3)
+    prepare_data(lines, "../TRAIN_data/", "Europarl_train_100k", length = 100_000, is_exo_3 = is_exo_3, overwrite = overwrite)
 
-    prepare_data(lines, "../DEV_data/", "Europarl_dev_3750", start = 100_000, length = 3_750, is_exo_3 = is_exo_3)
+    prepare_data(lines, "../DEV_data/", "Europarl_dev_3750", start = 100_000, length = 3_750, is_exo_3 = is_exo_3, overwrite = overwrite)
 
     if "no_new_test" not in args or not (Path("../TEST_data/Europarl_test_in_500.tok.true.clean.en").exists() and Path("../TEST_data/Europarl_test_in_500.tok.true.clean.en").exists()):
         # for the test, getting random pairs of lines inside the domain using train_test_split
@@ -39,7 +39,7 @@ def prepare_all_data(data_folder, *args):
             f.writelines(test_fr_lines)
         prepare_data(lines, "../TEST_data/", "Europarl_test_out_500", overwrite = True, is_exo_3 = is_exo_3, inputPath="Europarl_test_out_500")
 
-    prepare_data(lines, "../TRAIN_data/", "EMEA_train_10k", start = 13_750, length = 10_000, is_train_100k_10k = True, is_exo_3 = is_exo_3, inputPath="../../EMEA.en-fr.txt/EMEA.en-fr")
+    prepare_data(lines, "../TRAIN_data/", "EMEA_train_10k", start = 13_750, length = 10_000, is_train_100k_10k = True, is_exo_3 = is_exo_3, inputPath="../../EMEA.en-fr.txt/EMEA.en-fr", overwrite = overwrite)
     
 
     print("Data preparation complete.")
