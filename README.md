@@ -1,20 +1,17 @@
 # TAL_project
 
 
-google doc : https://docs.google.com/document/d/1chrQMpC4Pnln_k_ZKWvhCj1Lqpx-1u8CuYIMA3qcRpE/edit?tab=t.0
+Pour préparer les données d'entraînement, d'évaluation et de test :
+- placer le dossier Europarl.en-fr.txt, contenant Europarl.en-fr.fr, dans data/
+- faire la même chose avec EMEA.en-fr.txt
+- se connecter à l'environement de développement : conda activate env_opennmt
+- Installer les librairies Python : pip install --file requirements.txt
+- Changer MOSES_HOME dans prepare_data.py si besoin
+- lancer par exemple : python src/I_Experimentation.py
 
-to run the Python programs :
-- place the Europarl.en-fr.txt folder, containing Europarl.en-fr.fr, in data/
-- do the same with EMEA.en-fr.txt
 
 
-
-- Se connecter à l'environement de développement :
-conda activate env_opennmt
-
-- Installer les librairies Python :
-pip install --file requirements.txt
-
+Pour entraîner les modèles sur les données préparées :
 
 ================ Exercice 3 ================================
 

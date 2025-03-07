@@ -4,6 +4,8 @@ from I_Experimentation import *
 
 
 def prepare_all_data(data_folder, *args):
+    """Prepare all data for the given data folder."""
+
     overwrite = "overwrite" in args
 
     is_exo_3 = data_folder == "III_Evaluation_lemme"
@@ -46,31 +48,7 @@ def prepare_all_data(data_folder, *args):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    args = ["overwrite"]
-    #args = ["no_new_test"]
-    #args = ["test_not_random"]
+    # args = ["overwrite"]
+    # args = ["no_new_test"]
 
     prepare_all_data("II_Evaluation_forme_flechie", *args)
-
-
-
-
-
-    # tentative de faire ça automatiquement (ne marche pas)
-
-    # # Run 1
-    # stdout, stderr, return_code = run_wsl_command("onmt_build_vocab -config run_1.yaml -n_sample 10000")
-    # stdout, stderr, return_code = run_wsl_command("onmt_train -config run_1.yaml")
-    # steps = 10000
-    # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_1/pred_in_{steps}.txt -gpu 0 -verbose")
-    # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1/pred_in_{steps}.txt")
-    # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_1/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_1/pred_out_{steps}.txt -gpu 0 -verbose")
-    # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_1/pred_out_{steps}.txt")
-
-    # # Run 2
-    # stdout, stderr, return_code = run_wsl_command("onmt_build_vocab -config run_2.yaml -n_sample 10000")
-    # stdout, stderr, return_code = run_wsl_command("onmt_train -config run_2.yaml")
-    # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_2/pred_in_{steps}.txt -gpu 0 -verbose")
-    # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_2/pred_in_{steps}.txt")
-    # stdout, stderr, return_code = run_wsl_command(f"onmt_translate -model run_2/run/model_step_{steps}.pt -src TEST_data/Europarl_test_out_500.tok.true.clean.fr -output run_2/pred_out_{steps}.txt -gpu 0 -verbose")
-    # stdout, stderr, return_code = run_wsl_command(f"./multi_bleu.pl TEST_data/Europarl_test_out_500.tok.true.clean.fr < run_2/pred_out_{steps}.txt")

@@ -11,8 +11,7 @@ from french_lefff_lemmatizer.french_lefff_lemmatizer import FrenchLefffLemmatize
 
 
 # Set Moses home directory (relative to the project location)
-MOUSE_HOME = "/home/semmar/Training/SMT"
-MOSES_HOME = "../../../../Training/SMT" # TO_EDIT_BEFORE_DELIVERY
+MOSES_HOME = "/home/semmar/Training/SMT"
 
 
 def getLines(lines, input_path):
@@ -26,6 +25,7 @@ def getLines(lines, input_path):
             sys.exit(1)
 
 def tokenize(input_file, output_file, lang):
+    """Tokenize the input text using the Moses tokenizer."""
     tokenizer = Path(MOSES_HOME) / "mosesdecoder/scripts/tokenizer/tokenizer.perl"
     cmd = ["perl", str(tokenizer), "-l", lang]
     
@@ -37,11 +37,13 @@ def tokenize(input_file, output_file, lang):
         subprocess.run(cmd, stdin=infile, stdout=outfile, check=True)
 
 def train_truecaser(corpus_path, model_path):
+    """Train a truecaser model using the provided corpus."""
     trainer = Path(MOSES_HOME) / "mosesdecoder/scripts/recaser/train-truecaser.perl"
     cmd = ["perl", str(trainer), "--model", model_path, "--corpus", corpus_path]
     subprocess.run(cmd, check=True)
 
 def apply_truecaser(model_path, input_path, output_path):
+    """Apply truecasing using the trained truecaser model."""
     truecaser = Path(MOSES_HOME) / "mosesdecoder/scripts/recaser/truecase.perl"
     cmd = ["perl", str(truecaser), "--model", model_path]
     
@@ -50,12 +52,14 @@ def apply_truecaser(model_path, input_path, output_path):
         subprocess.run(cmd, stdin=infile, stdout=outfile, check=True)
 
 def clean_corpus(base_name, lang1, lang2, output_base, min_len, max_len):
+    """Clean parallel corpora by removing excessively long or short sentences."""
     cleaner = Path(MOSES_HOME) / "mosesdecoder/scripts/training/clean-corpus-n.perl"
     cmd = ["perl", str(cleaner), base_name, lang1, lang2, output_base, 
            str(min_len), str(max_len)]
     subprocess.run(cmd, check=True)
 
 def download_nltk_resources():
+    """Download necessary NLTK resources for lemmatization."""
     global wordnet_lemmatizer, french_lemmatizer
     nltk.download('wordnet')
     nltk.download('punkt')
@@ -69,6 +73,7 @@ def download_nltk_resources():
     french_lemmatizer = FrenchLefffLemmatizer()
 
 def lemmatize_text(lang: str, text: str) -> str:
+    """Lemmatize the input text based on the specified language."""
     global wordnet_lemmatizer, french_lemmatizer
     lemmatizer = None
     if lang == "en":
@@ -81,13 +86,8 @@ def lemmatize_text(lang: str, text: str) -> str:
     lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
     return ' '.join(lemmatized_tokens)
 
-def get_wordnet_pos(word):
-    """Map POS tag to first character lemmatize() accepts"""
-    tag = nltk.pos_tag([word])[0][1][0].upper()
-    tag_dict = {"J": 'a', "N": 'n', "V": 'v', "R": 'r'}
-    return tag_dict.get(tag, 'n')
-
 def prepare_data(lines: dict[str: list[str]], outputPath: str, outputName: str, start = 0, length = -1, overwrite = False, is_train_100k_10k = False, inputPath = "../../Europarl.en-fr.txt/Europarl.en-fr", is_exo_3 = False):
+    """Prepare training data by performing tokenization, truecasing, and cleaning."""
     if overwrite or not (Path(outputPath + outputName + ".tok.true.clean.en").exists() and Path(outputPath + outputName + ".tok.true.clean.fr").exists()) or is_train_100k_10k and not (Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.en").exists() and Path(outputPath + "Europarl_EMEA_train_100k_10k.tok.true.clean.fr").exists()):
         for lang in ["en", "fr"]:
             if not (start == 0 and length == -1):
