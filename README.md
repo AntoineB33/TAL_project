@@ -33,7 +33,7 @@ onmt_translate -model run_2_en_to_fr/run/model_step_1000.pt -src TEST_data/Europ
 onmt_translate -model run_2_fr_to_en/run/model_step_1000.pt -src TEST_data/Europarl_test_in_500.tok.true.clean.fr -output run_2_fr_to_en/pred_in_1000.txt -gpu 0 -verbose
 
 mesurer les tests dans le domaine :
-../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_1_en_to_fr/pred_in_1000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.fr < run_1_en_to_fr/pred_in_2500.txt
 ../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_1_fr_to_en/pred_in_1000.txt
 ../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_2_en_to_fr/pred_in_1000.txt
 ../../src/multi_bleu.pl TEST_data/Europarl_test_in_500.tok.true.clean.en < run_2_fr_to_en/pred_in_1000.txt
@@ -84,7 +84,7 @@ onmt_translate -model TRAIN_DEV_TEST_joints_en_to_fr/run/model_step_1000.pt -src
 onmt_translate -model TRAIN_DEV_TEST_joints_fr_to_en/run/model_step_1000.pt -src TEST_data/Europarl_test_500.tok.true.clean.fr -output TRAIN_DEV_TEST_joints_fr_to_en/pred_5000.txt -gpu 0 -verbose
 
 mesurer les tests dans le domaine :
-../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.en < TRAIN_DEV_TEST_joints_en_to_fr/pred_1000.txt
+../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.fr < TRAIN_DEV_TEST_joints_en_to_fr/pred_1000.txt
 ../../src/multi_bleu.pl TEST_data/Europarl_test_500.tok.true.clean.en < TRAIN_DEV_TEST_joints_fr_to_en/pred_5000.txt
 
 
